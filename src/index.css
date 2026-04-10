@@ -15,37 +15,37 @@
 
 /* === CSS Variables (Theme) === */
 :root {
-  --bg-claude-main: #FAF9F5;
-  --bg-claude-sidebar: #F9F8F3;
+  --bg-claude-main: #F8F8F6;
+  --bg-claude-sidebar: #F7F7F4;
   --border-claude: #E8E7E3;
   --text-claude-main: #2a2a2a;
   --text-claude-model-body: #2a2a2a;
   --text-claude-secondary: #666666;
   --bg-claude-accent: #CC7C5E;
-  --bg-claude-hover: #F0EEE6;
+  --bg-claude-hover: #EFEEEB;
   --bg-claude-btn-hover: #EAE9E6;
   --bg-claude-input: #FFFFFF;
   --bg-claude-avatar: #333333;
   --text-claude-avatar: #FFFFFF;
-  --bg-mode-tabs: #F0EEE6;
-  --bg-mode-tab-active: #FAF9F5;
+  --bg-mode-tabs: #EFEEEB;
+  --bg-mode-tab-active: #F8F8F6;
 }
 
 .dark {
-  --bg-claude-main: #262624;
-  --bg-claude-sidebar: #242422;
+  --bg-claude-main: #1F1F1E;
+  --bg-claude-sidebar: #1E1E1C;
   --border-claude: #444341;
   --text-claude-main: #FFFFFF;
   --text-claude-model-body: #EDEAE1;
   --text-claude-secondary: #ABA499;
   --bg-claude-accent: #CC7C5E;
-  --bg-claude-hover: #141413;
-  --bg-claude-btn-hover: #141413;
+  --bg-claude-hover: #121212;
+  --bg-claude-btn-hover: #121212;
   --bg-claude-input: #30302E;
   --bg-claude-avatar: #D4D4D4;
   --text-claude-avatar: #222222;
-  --bg-mode-tabs: #141413;
-  --bg-mode-tab-active: #262624;
+  --bg-mode-tabs: #121212;
+  --bg-mode-tab-active: #1F1F1E;
   color-scheme: dark;
 }
 

@@ -247,7 +247,7 @@ const ArtifactsPage: React.FC<ArtifactsPageProps> = ({ onTryPrompt }) => {
             {/* About - left */}
             <div className="flex-1 min-w-[300px]">
               <h2 className="text-[16px] font-semibold text-claude-text mb-4">About</h2>
-              <div className="bg-[#f5f5f4] dark:bg-[#141413] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-5">
+              <div className="bg-[#f5f5f4] dark:bg-[#121212] border border-black/[0.06] dark:border-white/[0.06] rounded-xl p-5">
                 <div className="flex items-center justify-between mb-3">
                   <h3 className="text-[14px] font-semibold text-claude-text">Starting prompt</h3>
                   <button

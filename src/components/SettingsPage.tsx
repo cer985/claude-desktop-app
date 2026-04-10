@@ -761,7 +761,7 @@ const SettingsPage = ({ onClose }: SettingsPageProps) => {
                       )}
 
                       {opt.value === 'dark' && (
-                        <div className="flex-1 bg-[#262624] p-2 flex flex-col gap-1.5">
+                        <div className="flex-1 bg-[#1F1F1E] p-2 flex flex-col gap-1.5">
                           <div className="flex justify-end mb-0.5">
                             <div className="w-10 h-2.5 bg-[#404040] rounded-full"></div>
                           </div>

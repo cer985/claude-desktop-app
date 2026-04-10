@@ -30,7 +30,7 @@ const DocumentDraftItem: React.FC<{ draft: DocumentDraftInfo }> = ({ draft }) =>
 
   return (
     <div className="relative pl-8 pb-2">
-      <div className="absolute left-0 top-0.5 z-10 bg-[#FAF9F5] text-claude-textSecondary">
+      <div className="absolute left-0 top-0.5 z-10 bg-[#F8F8F6] text-claude-textSecondary">
         {draft.done ? <Check size={16} /> : <FileText size={16} />}
       </div>
 

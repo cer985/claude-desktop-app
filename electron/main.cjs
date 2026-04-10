@@ -41,7 +41,7 @@ function createWindow() {
                 }
             }),
         icon: path.join(__dirname, '..', 'public', process.platform === 'win32' ? 'favicon.ico' : 'favicon.png'),
-        backgroundColor: '#FAF9F5',
+        backgroundColor: '#F8F8F6',
         show: false, // Show after ready-to-show to prevent flash
     });
 

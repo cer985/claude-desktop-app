@@ -176,7 +176,7 @@ const Auth = () => {
   );
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#FAF9F5] font-sans">
+    <div className="min-h-screen flex items-center justify-center bg-[#F8F8F6] font-sans">
       <div className="w-full max-w-md p-8 bg-white rounded-2xl shadow-sm border border-[#E5E5E5]">
         <div className="text-center mb-8">
           <h1 className="text-3xl font-serif-claude text-[#222] mb-2">Claude</h1>

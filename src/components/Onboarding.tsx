@@ -97,14 +97,14 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
     { id: 'system' as const, label: '跟随系统',
       preview: (
         <div className="w-full h-[80px] rounded-lg overflow-hidden flex">
-          <div className="flex-1 bg-[#FAF9F5] flex items-end p-2"><div className="w-full h-3 rounded bg-[#E8E5DE]"/></div>
+          <div className="flex-1 bg-[#F8F8F6] flex items-end p-2"><div className="w-full h-3 rounded bg-[#E8E5DE]"/></div>
           <div className="flex-1 bg-[#2A2A28] flex items-end p-2"><div className="w-full h-3 rounded bg-[#3A3A38]"/></div>
         </div>
       )
     },
     { id: 'light' as const, label: 'Light',
       preview: (
-        <div className="w-full h-[80px] rounded-lg bg-[#FAF9F5] flex flex-col justify-end p-2 gap-1.5">
+        <div className="w-full h-[80px] rounded-lg bg-[#F8F8F6] flex flex-col justify-end p-2 gap-1.5">
           <div className="w-[70%] h-2.5 rounded bg-[#E8E5DE]"/>
           <div className="w-[45%] h-2.5 rounded bg-[#E8E5DE]"/>
         </div>
