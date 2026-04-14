@@ -260,7 +260,13 @@ const Layout = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const [newChatKey, setNewChatKey] = useState(0);
   const [authChecked, setAuthChecked] = useState(true);
-  const [authValid, setAuthValid] = useState(true);
+  const [authValid, setAuthValid] = useState(() => {
+    // Electron + clawparrot mode without gateway key → need login. Other cases pass.
+    if (!(window as any).electronAPI?.isElectron) return true;
+    const mode = localStorage.getItem('user_mode');
+    const hasGatewayKey = !!(localStorage.getItem('ANTHROPIC_API_KEY') && localStorage.getItem('gateway_user'));
+    return !(mode === 'clawparrot' && !hasGatewayKey);
+  });
   const [showSettings, setShowSettings] = useState(false);
   const [showUpgrade, setShowUpgrade] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(() => !localStorage.getItem('onboarding_done'));
@@ -380,12 +386,14 @@ const Layout = () => {
   }, [location.pathname]);
 
   const isElectron = !!(window as any).electronAPI?.isElectron;
-  // Electron users can always enter the main UI regardless of auth state. The
-  // clawparrot login gate is now deferred to the first send attempt (see
-  // MainContent.tsx handleSend) — users can explore the app freely and only
-  // get prompted to login when they actually try to use a model.
+  // Electron auth rule: clawparrot users must login before entering the main UI
+  // (登录页会提示去 clawparrot.com 注册, 也提供"跳过登录"按钮切到 selfhosted).
+  // selfhosted users skip the login page entirely.
   useEffect(() => {
-    if (isElectron) setAuthValid(true);
+    if (!isElectron) return;
+    const mode = localStorage.getItem('user_mode');
+    const hasGatewayKey = !!(localStorage.getItem('ANTHROPIC_API_KEY') && localStorage.getItem('gateway_user'));
+    setAuthValid(!(mode === 'clawparrot' && !hasGatewayKey));
   }, [isElectron]);
 
   const loadUnreadAnnouncements = useCallback(async () => {
@@ -553,9 +561,12 @@ const Layout = () => {
   if (showOnboarding) {
     return <Onboarding onComplete={() => {
       setShowOnboarding(false);
-      // Both modes enter the main UI directly — clawparrot users will be
-      // prompted to login on first send, not forced into a login page.
-      if (isElectron) setAuthValid(true);
+      if (!isElectron) { setAuthValid(true); return; }
+      // clawparrot users go straight to /login (Onboarding also opens clawparrot.com
+      // in the browser so they can register). selfhosted users enter the main UI.
+      const mode = localStorage.getItem('user_mode');
+      const hasGatewayKey = !!(localStorage.getItem('ANTHROPIC_API_KEY') && localStorage.getItem('gateway_user'));
+      setAuthValid(!(mode === 'clawparrot' && !hasGatewayKey));
     }} />;
   }
 

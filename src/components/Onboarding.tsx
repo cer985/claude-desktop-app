@@ -76,6 +76,9 @@ const Onboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
       localStorage.removeItem('ANTHROPIC_BASE_URL');
       localStorage.removeItem('gateway_user');
       localStorage.removeItem('auth_token');
+    } else if (mode === 'clawparrot') {
+      // Open clawparrot.com so the user can register before logging in from the app.
+      try { api?.openExternal?.('https://clawparrot.com'); } catch {}
     }
     if (workspace) {
       localStorage.setItem('workspace_path', workspace);

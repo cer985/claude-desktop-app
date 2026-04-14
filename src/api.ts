@@ -27,6 +27,26 @@ function getUserModeForConversation(conversationId?: string): string {
   return localStorage.getItem('user_mode') || 'clawparrot';
 }
 
+// Resolve env_token / env_base_url to send to bridge. clawparrot mode must ignore
+// CUSTOM_API_KEY/CUSTOM_BASE_URL — those exist only because an old version of the
+// app let clawparrot users paste their own relay API key; the UI was removed but
+// the localStorage values stick around, and if we fall back to them the user
+// silently keeps hitting their old personal relay instead of the clawparrot
+// gateway. selfhosted mode still prefers CUSTOM_* since self-deploy users legitimately
+// need to bring their own key.
+function resolveEnvCreds(mode: string): { env_token?: string; env_base_url?: string } {
+  if (mode === 'clawparrot') {
+    return {
+      env_token: localStorage.getItem('ANTHROPIC_API_KEY') || undefined,
+      env_base_url: localStorage.getItem('ANTHROPIC_BASE_URL') || undefined,
+    };
+  }
+  return {
+    env_token: localStorage.getItem('CUSTOM_API_KEY') || localStorage.getItem('ANTHROPIC_API_KEY') || undefined,
+    env_base_url: localStorage.getItem('CUSTOM_BASE_URL') || localStorage.getItem('ANTHROPIC_BASE_URL') || undefined,
+  };
+}
+
 // 通用请求方法
 async function request(path: string, options: RequestInit = {}) {
   const token = getToken();
@@ -632,8 +652,7 @@ export async function compactConversation(
     method: 'POST',
     body: JSON.stringify({
       instruction,
-      env_token: localStorage.getItem('CUSTOM_API_KEY') || localStorage.getItem('ANTHROPIC_API_KEY') || undefined,
-      env_base_url: localStorage.getItem('CUSTOM_BASE_URL') || localStorage.getItem('ANTHROPIC_BASE_URL') || undefined,
+      ...resolveEnvCreds(getUserModeForConversation(id)),
     }),
   });
   return res.json();
@@ -666,8 +685,7 @@ export function warmEngine(conversationId: string): void {
   request(`/conversations/${conversationId}/warm`, {
     method: 'POST',
     body: JSON.stringify({
-      env_token: localStorage.getItem('CUSTOM_API_KEY') || localStorage.getItem('ANTHROPIC_API_KEY') || undefined,
-      env_base_url: localStorage.getItem('CUSTOM_BASE_URL') || localStorage.getItem('ANTHROPIC_BASE_URL') || undefined,
+      ...resolveEnvCreds(userMode),
       user_mode: userMode,
       user_profile: userProfile,
     }),
@@ -1062,8 +1080,7 @@ export async function sendMessage(
         conversation_id: conversationId,
         message,
         attachments: attachments || undefined,
-        env_token: localStorage.getItem('CUSTOM_API_KEY') || localStorage.getItem('ANTHROPIC_API_KEY') || undefined,
-        env_base_url: localStorage.getItem('CUSTOM_BASE_URL') || localStorage.getItem('ANTHROPIC_BASE_URL') || undefined,
+        ...resolveEnvCreds(getUserModeForConversation(conversationId)),
         user_mode: getUserModeForConversation(conversationId),
         user_profile: (() => {
           try {
