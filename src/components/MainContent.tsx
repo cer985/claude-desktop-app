@@ -1130,7 +1130,15 @@ const MainContent = ({ onNewChat, resetKey, tunerConfig, onOpenDocument, onArtif
   // Initial model: for self-hosted, prefer first configured model over hardcoded claude-sonnet-4-6
   const [currentModelString, setCurrentModelString] = useState(() => {
     const saved = localStorage.getItem('default_model');
-    if (saved) return saved;
+    // clawparrot mode must only speak Claude. If default_model still points at
+    // a selfhosted leftover (e.g. minimax-m1) from before the mode switch,
+    // ignore it instead of shipping the wrong model to the bridge.
+    if (saved) {
+      if (!isSelfHostedMode && !/^claude-/i.test(stripThinking(saved))) {
+        return 'claude-sonnet-4-6';
+      }
+      return saved;
+    }
     if (isSelfHostedMode && selfHostedModels.length > 0) return selfHostedModels[0].id;
     return 'claude-sonnet-4-6';
   });
@@ -1241,7 +1249,13 @@ const MainContent = ({ onNewChat, resetKey, tunerConfig, onOpenDocument, onArtif
   }, [modelCatalog, displayCommonModels]);
 
   const resolveModelForNewChat = useCallback((preferredModel?: string | null) => {
-    const saved = preferredModel || localStorage.getItem('default_model') || 'claude-sonnet-4-6';
+    const rawSaved = preferredModel || localStorage.getItem('default_model') || 'claude-sonnet-4-6';
+    // clawparrot only routes Claude models. A stale selfhosted default
+    // (minimax / qwen / glm / deepseek) must be ignored so the new conv
+    // doesn't inherit a provider it can never reach under clawparrot.
+    const savedBase = stripThinking(rawSaved);
+    const savedIsInvalidForMode = !isSelfHostedMode && !/^claude-/i.test(savedBase);
+    const saved = savedIsInvalidForMode ? 'claude-sonnet-4-6' : rawSaved;
     const thinking = isThinkingModel(saved);
     const base = stripThinking(saved);
     const all = modelCatalog?.all || displayCommonModels;
@@ -1256,7 +1270,7 @@ const MainContent = ({ onNewChat, resetKey, tunerConfig, onOpenDocument, onArtif
       || base
       || 'claude-sonnet-4-6';
     return withThinking(fallbackBase, thinking);
-  }, [displayCommonModels, modelCatalog]);
+  }, [displayCommonModels, modelCatalog, isSelfHostedMode]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -1571,7 +1585,10 @@ const MainContent = ({ onNewChat, resetKey, tunerConfig, onOpenDocument, onArtif
         setModelCatalog(data);
         if (!viewingIdRef.current) {
           setCurrentModelString(prev => {
-            const current = prev || localStorage.getItem('default_model') || 'claude-sonnet-4-6';
+            const rawCurrent = prev || localStorage.getItem('default_model') || 'claude-sonnet-4-6';
+            // Protect clawparrot against selfhosted leftovers (see resolveModelForNewChat).
+            const rawBase = stripThinking(rawCurrent);
+            const current = (!isSelfHosted && !/^claude-/i.test(rawBase)) ? 'claude-sonnet-4-6' : rawCurrent;
             const thinking = isThinkingModel(current);
             const base = stripThinking(current);
             const all: SelectableModel[] = data?.all?.length ? data.all : fallbackCommonModels;

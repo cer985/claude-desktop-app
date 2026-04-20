@@ -3341,7 +3341,16 @@ You have the following skills available. When a user's request matches a skill's
     }
     function resolveChatConfig(conv, user_mode, env_token, env_base_url) {
         const rawModel = conv.model || 'claude-sonnet-4-6';
-        const modelId = rawModel.replace(/-thinking$/, '');
+        let modelId = rawModel.replace(/-thinking$/, '');
+        // Clawparrot only routes through the Anthropic gateway — if the stored
+        // conv.model is a selfhosted leftover (e.g. minimax / qwen / glm), the
+        // gateway would still accept the request but bill it against the wrong
+        // tier and return confusing results. Force a sane Claude fallback and
+        // leave a loud log so we can trace stale convs.
+        if (user_mode === 'clawparrot' && !/^claude-/i.test(modelId)) {
+            console.warn('[Chat] Non-Claude model', modelId, 'detected under clawparrot mode — falling back to claude-sonnet-4-6 (conv model leaked from selfhosted?)');
+            modelId = 'claude-sonnet-4-6';
+        }
         const provider = user_mode === 'selfhosted' ? resolveProvider(modelId) : null;
         let apiKey, baseUrl, apiFormat = 'anthropic';
         let supportsWebSearch = false;
